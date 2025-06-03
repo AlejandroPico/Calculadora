@@ -1,8 +1,8 @@
 package operations;
 
-public class Porcentaje implements Operation {
+public class Seno implements Operation {
     @Override
     public double calcular(double a, double b) { // b will be ignored
-        return a / 100.0;
+        return Math.sin(a);
     }
 }
