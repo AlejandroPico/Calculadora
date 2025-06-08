@@ -15,6 +15,7 @@ public class Gui extends JFrame {
     private double secondNumber;
     private Operation currentOperation;
     private boolean isResultDisplayed = false;
+    private double memory = 0.0;
 
     public Gui() {
         super("Calculadora");
@@ -29,25 +30,28 @@ public class Gui extends JFrame {
         // Campo de texto en la parte superior
         display = new JTextField(20);
         display.setEditable(false); // Para que el usuario no escriba manualmente
-        display.setFont(display.getFont().deriveFont(30f));
+        display.setFont(display.getFont().deriveFont(60f));
         add(display, BorderLayout.NORTH);
 
-        // Panel con botones en una cuadrícula 6x4
-        JPanel panel = new JPanel(new GridLayout(6, 4));
+        // Panel con botones en una cuadrícula 8x4
+        JPanel panel = new JPanel(new GridLayout(8, 4, 5, 5));
 
         // Etiquetas de los botones que vamos a crear
         String[] buttonLabels = {
             "7", "8", "9", "/",
             "4", "5", "6", "*",
             "1", "2", "3", "-",
-            "0", "+/-", "=", "+",
+            "0", "±", "=", "+",
             ".", "C", "√", "%",
-            "x^y", "sin", "cos", "tan" // New sixth row
+            "xʸ", "ⁿ√", "π", "e",
+            "ln", "M+", "MR", "MC",
+            "sin", "cos", "tan", ""
         };
 
         // Crear y añadir cada botón al panel
         for (String label : buttonLabels) {
             JButton btn = new JButton(label);
+            btn.setFont(btn.getFont().deriveFont(20f));
             btn.addActionListener(new ButtonClickListener());
             panel.add(btn);
         }
@@ -85,20 +89,19 @@ public class Gui extends JFrame {
                     }
                     break;
 
-                case "√":
+                case "√": {
                     String currentTextSqrt = display.getText();
                     if (currentTextSqrt.isEmpty() || currentTextSqrt.startsWith("Error:")) {
                         break;
                     }
 
-                    double operand = parseDisplay();
-                    // Ensure RaizCuadrada is imported (should be covered by operations.*)
+                    double operandSqrt = parseDisplay();
                     Operation sqrtOp = new RaizCuadrada();
 
                     try {
-                        double result = sqrtOp.calcular(operand, 0); // Second param is dummy
-                        display.setText(formatResult(result));
-                        firstNumber = result;
+                        double resultSqrt = sqrtOp.calcular(operandSqrt, 0);
+                        display.setText(formatResult(resultSqrt));
+                        firstNumber = resultSqrt;
                         currentOperation = null;
                         isResultDisplayed = true;
                     } catch (ArithmeticException ex) {
@@ -109,8 +112,9 @@ public class Gui extends JFrame {
                         isResultDisplayed = true;
                     }
                     break;
+                }
 
-                case "+/-":
+                case "±":
                     String currentText = display.getText();
                     if (currentText.isEmpty() || currentText.startsWith("Error:")) { // More general error check
                         break;
@@ -168,20 +172,71 @@ public class Gui extends JFrame {
                     isResultDisplayed = false;
                     break;
 
-                case "x^y":
+                case "xʸ":
                     setOperation(new Potencia());
                     isResultDisplayed = false; // Consistent with other binary operations
                     break;
 
+                case "ⁿ√":
+                    setOperation(new Raiz());
+                    isResultDisplayed = false;
+                    break;
+
+                case "π":
+                    display.setText(formatResult(Math.PI));
+                    isResultDisplayed = true;
+                    currentOperation = null;
+                    break;
+
+                case "e":
+                    display.setText(formatResult(Math.E));
+                    isResultDisplayed = true;
+                    currentOperation = null;
+                    break;
+
+                case "ln": {
+                    String currentTextLn = display.getText();
+                    if (currentTextLn.isEmpty() || currentTextLn.startsWith("Error:")) {
+                        break;
+                    }
+                    double operandLn = parseDisplay();
+                    Operation logOp = new Logaritmo();
+                    try {
+                        double resLn = logOp.calcular(operandLn, 0);
+                        display.setText(formatResult(resLn));
+                        firstNumber = resLn;
+                        currentOperation = null;
+                        isResultDisplayed = true;
+                    } catch (ArithmeticException ex) {
+                        display.setText("Error: ln");
+                        isResultDisplayed = true;
+                    }
+                    break;
+                }
+
+                case "M+":
+                    memory = parseDisplay();
+                    isResultDisplayed = true;
+                    break;
+
+                case "MR":
+                    display.setText(formatResult(memory));
+                    isResultDisplayed = true;
+                    break;
+
+                case "MC":
+                    memory = 0.0;
+                    break;
+
                 case "sin":
                 case "cos":
-                case "tan":
+                case "tan": {
                     String currentTextTrig = display.getText();
                     if (currentTextTrig.isEmpty() || currentTextTrig.startsWith("Error:")) {
                         break;
                     }
 
-                    double operand = parseDisplay();
+                    double operandTrig = parseDisplay();
                     Operation trigOp = null;
                     String commandAction = e.getActionCommand();
 
@@ -198,33 +253,34 @@ public class Gui extends JFrame {
                     }
 
                     if (trigOp != null) {
-                        double result = trigOp.calcular(operand, 0);
-                        display.setText(formatResult(result));
-                        firstNumber = result;
+                        double resTrig = trigOp.calcular(operandTrig, 0);
+                        display.setText(formatResult(resTrig));
+                        firstNumber = resTrig;
                         currentOperation = null;
                         isResultDisplayed = true;
                     }
                     break;
+                }
 
-                case "=":
-                    // Realizar la operación si hay una en curso
+                case "=": {
                     if (currentOperation != null) {
                         secondNumber = parseDisplay();
                         try {
-                            double result = currentOperation.calcular(firstNumber, secondNumber);
-                            display.setText(formatResult(result));
-                            firstNumber = result;
-                            isResultDisplayed = true; // Flag that a result is shown
+                            double resultEq = currentOperation.calcular(firstNumber, secondNumber);
+                            display.setText(formatResult(resultEq));
+                            firstNumber = resultEq;
+                            isResultDisplayed = true;
                             currentOperation = null;
                         } catch (ArithmeticException ex) {
                             display.setText("Error: Div by 0");
-                            firstNumber = 0; // Reset state
+                            firstNumber = 0;
                             secondNumber = 0;
                             currentOperation = null;
-                            isResultDisplayed = true; // Allow clearing on next digit
+                            isResultDisplayed = true;
                         }
                     }
                     break;
+                }
             }
         }
     }
