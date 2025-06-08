@@ -1,30 +1,36 @@
 # Calculadora
-Calculadora con interfaz gráfica
 
+Aplicación de calculadora con interfaz gráfica basada en Swing. Incorpora funciones básicas y científicas.
 
-Esta es una primera versión simplificada, de momento hace suma, resta, división (consultar errores), multiplicación y borrar
+## Funcionalidades
+- Suma, resta, multiplicación y división
+- Potencias (`xʸ`) y raíces cuadradas y de índice n (`√`, `ⁿ√`)
+- Operaciones con porcentajes
+- Cambio de signo (`±`)
+- Introducción de decimales
+- Funciones trigonométricas: seno, coseno y tangente
+- Logaritmo natural (`ln`)
+- Constantes matemáticas π y e
+- Memoria de cálculo (`M+`, `MR`, `MC`)
+- Manejo de números grandes mediante notación científica
 
-ERRORES POR CORREGIR
-  * El display que muestra de los números debería de ser más grande, por lo menos el triple
-  * Los resultados devuelven siempre decimales innecesarios (.0?)
-  * Al devolver resultado y clicar en número, se añade a la cifra del resultado, sería más correcto borrar la cifra o en caso de seguir operando, esperar a una pulsación en botón pertinente
-  * La división entre 0 está controlada, pero como excepción, al ejecutarse el programa se bloquea, preferible hacer que una string con el mensaje saliese por pantalla
-  * No existe posibilidad de mostrar resultados muy grandes, debería de tener una forma de expresar las potencias
+## Errores corregidos
+- Display ampliado para una mejor visualización
+- Eliminados decimales innecesarios en los resultados
+- Tras mostrar un resultado el siguiente número borra automáticamente el display
+- Mensaje de error al intentar dividir entre cero
 
-MEJORAS PROPUESTAS
-  *  Botón para pasar a negativo o positivo
-  *  Inclusión botón "," y trabajo con decimales
-  *  Elevar a potencia indicada
-  *  Raiz cuadrada
-  *  Raiz de potencia indicada
-  *  Porcentiles
-  *  Prioridad de operación (cálculo entre paréntesis)
-  *  Muestra y cálculo de fracciones
-  *  FUNCIONES TRIGONOMÉTRICAS
-  *  Calculo de seno, coseno y tangente
-  *  Uso de numero PI y E
-  *  número periódico
-  *  Logaritmo
-  *  Memorizar número
-  *  Buscar ideas
-  
+## Pendiente
+- Prioridad de operaciones con paréntesis
+- Cálculo y visualización de fracciones o números periódicos
+
+## Uso
+Compilar:
+```bash
+javac -d bin src/main/Calculadora.java src/gui/Gui.java src/operations/*.java
+```
+
+Ejecutar:
+```bash
+java -cp bin main.Calculadora
+```
